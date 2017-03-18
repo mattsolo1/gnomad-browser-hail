@@ -6,4 +6,4 @@ target
 *.ipr
 *.iws
 .idea
-out
+src/test/resources
