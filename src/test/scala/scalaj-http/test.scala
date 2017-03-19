@@ -129,7 +129,4 @@ class ScalaHttp extends FlatSpec with Matchers {
     featureType.isInstanceOf[JObject] should be (true)
     featureType.children.size should be (26)
   }
-
-  "json AST" should "have values extracted by case classes" in {
-  }
 }
