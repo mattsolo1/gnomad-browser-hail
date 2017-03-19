@@ -1,7 +1,9 @@
 import org.scalatest._
+
 import org.json4s.jackson.JsonMethods
 import org.json4s.{JObject, JArray, JInt, JString, JDecimal, JField}
 import org.json4s.JsonDSL.WithBigDecimal._
+import org.json4s.DefaultFormats
 
 class Json4s extends FlatSpec with Matchers {
   "parse method" should "parse json into an internal AST format" in {

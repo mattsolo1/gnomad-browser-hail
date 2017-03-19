@@ -63,7 +63,8 @@ class ScalaHttp extends FlatSpec with Matchers {
       )))))))
     parsed should be (expected)
   }
-  "Json response" should "should be queried using json4s" in {
+
+  "Json response" should "be queried using json4 and for-comprehensions" in {
     val url = "http://gnomad-api.broadinstitute.org"
     val query = """{
       gene(gene_name: "PCSK9") {
@@ -92,8 +93,43 @@ class ScalaHttp extends FlatSpec with Matchers {
       JObject(data) <- parsed
       JField("feature_type", JString(feature)) <- data
     } yield feature
+    features.size should be (26)
     val featureCounts = features.groupBy(identity).mapValues(_.size)
     val expected = Map("CDS" -> 12, "exon" -> 12, "UTR" -> 2)
     featureCounts should be (expected)
+  }
+
+  "json AST" should "be queried using XPath-like functions" in {
+    val url = "http://gnomad-api.broadinstitute.org"
+    val query = """{
+      gene(gene_name: "PCSK9") {
+        gene_name
+        start
+        stop
+        transcript {
+          exons {
+            _id
+            start
+            feature_type
+            strand
+            stop
+            chrom
+          }
+        }
+      }
+    }"""
+    val headers = Seq(("content-type", "application/graphql"), ("accept", "application/json"))
+    val response = Http(url).postData(query).headers(headers).asString
+    val json = JsonMethods.parse(response.body, useBigDecimalForDouble = true)
+
+    val geneName = json \\ "gene_name"
+    geneName should be (JString("PCSK9"))
+
+    val featureType = json \\ "feature_type"
+    featureType.isInstanceOf[JObject] should be (true)
+    featureType.children.size should be (26)
+  }
+
+  "json AST" should "have values extracted by case classes" in {
   }
 }
