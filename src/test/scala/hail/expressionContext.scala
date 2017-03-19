@@ -2,15 +2,17 @@ package expressionContext
 
 import org.scalatest._
 import is.hail.HailContext
-import is.hail.expr.{TString, TDouble, TSet, TInt, TArray, TDict, TVariant, TGenotype, TStruct, TCall, EvalContext}
+import is.hail.expr.{TString, TDouble, TSet, TInt, TArray, TDict, TVariant, TGenotype, TStruct, TCall, Parser, EvalContext}
 import is.hail.annotations.Annotation
 import is.hail.variant.{Genotype, Call}
 
 import scala.collection.mutable.ArrayBuffer
 
 class ExpressionContextTest extends FlatSpec with Matchers {
-  "EvalContext" should "take a symbol table, return an empty array buffer you can fill with values" in {
 
+  val hc = HailContext()
+
+  "EvalContext" should "take a symbol table, return an empty array buffer you can fill with values" in {
 
     val symbolTable = Map(
       "meaning"-> (0, TInt),
@@ -81,7 +83,22 @@ class ExpressionContextTest extends FlatSpec with Matchers {
       Annotation(2, "C", 7)
     )
     arrayBuffer(5) = Annotation(null, Call(0), Call(1), Call(2))
-    println(arrayBuffer)
+    // println(arrayBuffer)
     // ArrayBuffer(Matthew, [./.:.:.:.:PL=.,0/0:.:.:.:PL=.,0/1:.:.:.:PL=.,1/1:.:.:.:PL=.,3/5:.:.:.:PL=.], Set(0, 1, 2), Map(gene1 -> 2, gene2 -> 10, gene3 -> 14), Vector([1,A,2], [9,B,3], [2,C,7]), [null,0,1,2])
   }
+
+  // it should "Use vaSignature as in the symbol table" in {
+    // val gnomad_exomes_PCSK9 = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
+    // val vds = hc.read(gnomad_exomes_PCSK9)
+    // val variantAnnotationSignature = vds.vaSignature
+    // val variantSymbolTable = Map(
+    //   "v" -> (0, TVariant),
+    //   "va" -> (1, variantAnnotationSignature)
+    // )
+    // val variantEvaluationContext = EvalContext(variantSymbolTable)
+    // println(variantEvaluationContext.st)
+    // println(variantEvaluationContext.a)
+
+    // val (variantNames, variantTypes, variantFunction) = Parser.variantEvaluationContext()
+  // }
 }
