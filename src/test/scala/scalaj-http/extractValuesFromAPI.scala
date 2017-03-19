@@ -24,7 +24,6 @@ class ExtractValuesFromApi extends FlatSpec with Matchers {
     val response = Http(url).postData(query).headers(headers).asString
     val json = parse(response.body)
     val data = json.children(0).children(0)
-    println(data)
     val PCSK9_data = data.extract[Gene]
 
     PCSK9_data should be (Gene("PCSK9","ENSG00000169174","1",55505222,"55530526"))
