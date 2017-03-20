@@ -13,7 +13,7 @@ import spray.json._
 
 import scala.util.{Failure, Success}
 
-object Server extends App {
+object Server {
   implicit val system = ActorSystem("sangria-server")
   implicit val materializer = ActorMaterializer()
 
