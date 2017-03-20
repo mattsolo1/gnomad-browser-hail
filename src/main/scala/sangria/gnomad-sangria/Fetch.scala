@@ -7,8 +7,6 @@ import org.json4s.{JObject, JArray, JInt, JString, JDecimal}
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 
-case class GnomadGene(gene_name: String, gene_id: String, chrom: String, start: Int, stop: String)
-
 object FetchData {
 
   implicit val formats = DefaultFormats

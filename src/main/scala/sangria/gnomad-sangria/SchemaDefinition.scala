@@ -7,7 +7,7 @@ import scala.concurrent.Future
 
 object SchemaDefinition {
   val GeneType = ObjectType(
-    "Gene", fields[Unit, Gene](
+    "Gene", fields[Unit, GnomadGene](
       Field(
         "gene_name",
         StringType,
@@ -19,6 +19,24 @@ object SchemaDefinition {
         StringType,
         Some("The gene id"),
         resolve = _.value.gene_id
+      ),
+      Field(
+        "chrom",
+        StringType,
+        Some("The gene id"),
+        resolve = _.value.chrom
+      ),
+      Field(
+        "start",
+        IntType,
+        Some("Gene start position"),
+        resolve = _.value.start
+      ),
+      Field(
+        "stop",
+        StringType,
+        Some("Gene stop position"),
+        resolve = _.value.stop
       )
     )
   )
