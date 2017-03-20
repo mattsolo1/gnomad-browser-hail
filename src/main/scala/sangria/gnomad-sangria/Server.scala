@@ -47,7 +47,7 @@ object Server extends App {
 
             // query parsed successfully, time to execute it!
             case Success(queryAst) ⇒
-              complete(Executor.execute(GnomadSchema.GnomadSchema, queryAst, new GnomadDatabase(vds),
+              complete(Executor.execute(SchemaDefinition.GnomadSchema, queryAst, new GnomadDatabase(vds),
                 variables = vars,
                 operationName = operation)
                 // deferredResolver = DeferredResolver.fetchers(SchemaDefinition.characters))

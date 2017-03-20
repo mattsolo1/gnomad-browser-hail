@@ -5,7 +5,7 @@ import sangria.schema._
 
 import scala.concurrent.Future
 
-object GnomadSchema {
+object SchemaDefinition {
   val GeneType = ObjectType(
     "Gene", fields[Unit, Gene](
       Field(
@@ -24,6 +24,7 @@ object GnomadSchema {
   )
 
   val GeneNameArgument = Argument("gene_name", StringType, description = "Gene name")
+
   val Query = ObjectType("Query", fields[GnomadDatabase, Unit](
     Field("gene", OptionType(GeneType),
       arguments = GeneNameArgument :: Nil,

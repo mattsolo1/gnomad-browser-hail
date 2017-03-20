@@ -6,6 +6,7 @@ package gnomadsangria
 // // import is.hail.utils._
 import is.hail.variant.{VariantDataset, Genotype, Locus, Variant}
 
+import gnomadutils.FilterByInterval.{filterVariantsByInterval}
 
 case class Gene(gene_name: String, gene_id: String)
 
@@ -13,20 +14,9 @@ class GnomadDatabase(vds: VariantDataset) {
   import GnomadDatabase._
 
   def getGene(gene_name: String): Option[Gene] = {
-    println(vds.count())
-    genes.find(gene => gene.gene_name == gene_name)
+    val geneData = FetchData.fetchGeneByName(gene_name)
+    // println(vds.count())
+    val result = Gene(gene_name = geneData.gene_name, gene_id = geneData.gene_id)
+    Some(result)
   }
-}
-
-object GnomadDatabase {
-  val genes = List(
-    Gene(
-      gene_id = "001",
-      gene_name = "PCSK9"
-    ),
-    Gene(
-      gene_id = "002",
-      gene_name = "PPARA"
-    )
-  )
 }
