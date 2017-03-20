@@ -6,8 +6,33 @@ import sangria.schema._
 import scala.concurrent.Future
 
 object SchemaDefinition {
+  val VariantType = ObjectType(
+
+    "Variant", fields[Unit, GnomadVariant](
+      Field(
+        "contig",
+        StringType,
+        Some("Chromosome"),
+        resolve = _.value.contig
+      ),
+      Field(
+        "start",
+        LongType,
+        Some("Start position"),
+        resolve = _.value.start
+      ),
+      Field(
+        "ref",
+        StringType,
+        Some("Reference allele"),
+        resolve = _.value.ref
+      )
+    )
+  )
+
   val GeneType = ObjectType(
-    "Gene", fields[Unit, GnomadGene](
+
+    "Gene", fields[GnomadDatabase, GnomadGene](
       Field(
         "gene_name",
         StringType,
@@ -37,6 +62,16 @@ object SchemaDefinition {
         StringType,
         Some("Gene stop position"),
         resolve = _.value.stop
+      ),
+      Field(
+        "exome_variants",
+        ListType(VariantType),
+        Some("Exome variants"),
+        resolve = (context) => {
+          val gene = context.value
+          val variants = context.ctx.getVariants(gene.chrom, gene.start, gene.stop)
+          variants
+        }
       )
     )
   )
