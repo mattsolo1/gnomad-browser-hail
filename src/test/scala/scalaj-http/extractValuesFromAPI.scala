@@ -17,7 +17,6 @@ class ExtractValuesFromApi extends FlatSpec with Matchers {
         gene_id
         chrom
         start
-        gene_name
       }
     }"""
     val headers = Seq(("content-type", "application/graphql"), ("accept", "application/json"))

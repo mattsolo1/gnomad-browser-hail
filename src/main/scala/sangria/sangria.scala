@@ -116,7 +116,7 @@ object GnomadSchema {
   val GnomadSchema = Schema(Query)
 }
 
-object Server extends App {
+object Server {
 
   def run(hc: HailContext, vds: VariantDataset, address: String, port: Int) = {
 
