@@ -14,6 +14,14 @@ class SchemaParsingTest extends FlatSpec with Matchers {
     val metadataFile = vdsPath + "/metadata.json.gz"
     val json = hc.hadoopConf.readFile(metadataFile)(in => JsonMethods.parse(in))
     val something = true
-    something should be (true)
+    // something should be (true)
+    // println(json)
+
+    val vds = hc.read(vdsPath)
+    vds.rdd.mapPartitions(it => {
+      it.map { case (v, (va, gs)) =>
+        println(va)
+      }
+    })
   }
 }

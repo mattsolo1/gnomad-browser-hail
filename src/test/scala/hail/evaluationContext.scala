@@ -87,18 +87,18 @@ class ExpressionContextTest extends FlatSpec with Matchers {
     // ArrayBuffer(Matthew, [./.:.:.:.:PL=.,0/0:.:.:.:PL=.,0/1:.:.:.:PL=.,1/1:.:.:.:PL=.,3/5:.:.:.:PL=.], Set(0, 1, 2), Map(gene1 -> 2, gene2 -> 10, gene3 -> 14), Vector([1,A,2], [9,B,3], [2,C,7]), [null,0,1,2])
   }
 
-  // it should "Use vaSignature as in the symbol table" in {
-    // val gnomad_exomes_PCSK9 = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
-    // val vds = hc.read(gnomad_exomes_PCSK9)
-    // val variantAnnotationSignature = vds.vaSignature
-    // val variantSymbolTable = Map(
-    //   "v" -> (0, TVariant),
-    //   "va" -> (1, variantAnnotationSignature)
-    // )
-    // val variantEvaluationContext = EvalContext(variantSymbolTable)
-    // println(variantEvaluationContext.st)
-    // println(variantEvaluationContext.a)
-
+  it should "Use vaSignature as in the symbol table" in {
+    val gnomad_exomes_PCSK9 = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
+    val vds = hc.read(gnomad_exomes_PCSK9)
+    val vas = vds.vaSignature
+    val variantSymbolTable = Map(
+      "v" -> (0, TVariant),
+      "va" -> (1, vas)
+    )
+    val variantEvaluationContext = EvalContext(variantSymbolTable)
+    println(variantEvaluationContext.st)
+    println(variantEvaluationContext.a)
     // val (variantNames, variantTypes, variantFunction) = Parser.variantEvaluationContext()
-  // }
+  }
+
 }
