@@ -21,7 +21,7 @@ class GetIntervalWithAPITest extends FlatSpec with Matchers {
   "gnomad API" should "be called to filter intervals with Hail" in {
     val url = "http://gnomad-api.broadinstitute.org"
     val query = """{
-      gene(gene_name: "PCSK9") {
+      gene(gene_name: "SRY") {
         gene_id
         gene_name
         chrom
@@ -37,9 +37,9 @@ class GetIntervalWithAPITest extends FlatSpec with Matchers {
     val data = parsed.children(0).children(0)
     val gene = data.extract[Gene]
     // val interval_PCSK9 = "1:55505221-55530525"
-    val gnomadExomeAutosomes = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.autosomes.vds"
+    val gnomadExomeAutosomes = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.Y.vds"
     val intervalString = s"${gene.chrom}:${gene.start}-${gene.stop}"
     val filteredVDS = filterVariantsByInterval(hc, intervalString, gnomadExomeAutosomes)
-    filteredVDS.count().nVariants should be (1135)
+    filteredVDS.count().nVariants should be (44)
   }
 }
