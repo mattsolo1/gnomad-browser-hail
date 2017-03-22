@@ -10,6 +10,5 @@ class KeyTableSpec extends FlatSpec with Matchers {
 
   "object" should "do something specific" in {
     val kt = vds.variantsKT
-    kt.mapAnnotations(a => { println(a) })
   }
 }

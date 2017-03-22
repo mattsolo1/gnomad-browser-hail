@@ -8,7 +8,7 @@ import is.hail.variant.{Genotype, Call}
 
 import scala.collection.mutable.ArrayBuffer
 
-class ExpressionContextTest extends FlatSpec with Matchers {
+class EvaluationContextTest extends FlatSpec with Matchers {
 
   val hc = HailContext()
 
