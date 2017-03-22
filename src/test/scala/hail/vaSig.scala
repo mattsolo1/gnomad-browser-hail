@@ -4,6 +4,7 @@ import is.hail.expr.Field
 import is.hail.variant.Variant
 import is.hail.expr.SparkAnnotationImpex
 
+
 class VariantsSigSpec extends FlatSpec with Matchers {
 
   val hc = HailContext()
@@ -49,6 +50,6 @@ class VariantsSigSpec extends FlatSpec with Matchers {
     val first = bundle.take(1)
     bundle.take(1)(0).get("variantId") should be (Some("1:55505462:A:G"))
     bundle.take(1)(0).get("fieldName") should be (Some("AC"))
-    bundle.count should be (1135)
+    // bundle.count _ should be (1135)
   }
 }

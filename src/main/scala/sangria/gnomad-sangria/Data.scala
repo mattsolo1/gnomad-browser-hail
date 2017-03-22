@@ -20,31 +20,19 @@ class GnomadDatabase(vds: VariantDataset) {
 
     val intervalString = s"${contig}:${start}-${stop}"
     val filteredVariants = getVariantsInGene(vds, intervalString)
-    val variantCount = filteredVariants.count().nVariants
 
     val vas = filteredVariants.vaSignature
 
-    // val data = vds.rdd.collect().toList
-    val kt = vds.variantsKT
-    
-
-    val results = List(
+    val results = filteredVariants.rdd.map { case (v, (va, gs)) =>
       GnomadVariant(
-        contig = "1",
-        start = variantCount,
-        ref = "G"
-      ),
-      GnomadVariant(
-        contig = "1",
-        start = variantCount,
-        ref = "C"
-      ),
-      GnomadVariant(
-        contig = "1",
-        start = variantCount,
-        ref = "G"
+        contig = v.contig,
+        start = v.start,
+        ref = v.ref
       )
-    )
-    results
+    }
+
+    val collected = results.collect().toList
+
+    collected
   }
 }
