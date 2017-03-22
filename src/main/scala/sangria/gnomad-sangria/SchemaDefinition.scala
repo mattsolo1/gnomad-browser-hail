@@ -28,11 +28,29 @@ object SchemaDefinition {
         resolve = _.value.ref
       ),
       Field(
+        "alt",
+        ListType(StringType),
+        Some("Alternate allele"),
+        resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList
+      ),
+      Field(
         "allele_count",
         ListType(IntType),
         Some("Allele count"),
         resolve = _.value.allele_count
-        )
+      ),
+      Field(
+        "allele_frequency",
+        ListType(FloatType),
+        Some("Allele frequency"),
+        resolve = _.value.allele_frequency
+      ),
+      Field(
+        "allele_number",
+        IntType,
+        Some("Allele number"),
+        resolve = _.value.allele_number
+      )
     )
   )
 

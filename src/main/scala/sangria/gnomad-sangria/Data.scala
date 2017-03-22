@@ -6,6 +6,7 @@ package gnomadsangria
 // // import is.hail.utils._
 import is.hail.expr.{EvalContext, Parser, TArray, TBoolean, TDouble, TFloat, TGenotype, TInt, TLong, TSample, TSet, TString, TVariant, Type}
 import is.hail.variant.{VariantDataset, Genotype, Locus, Variant}
+import org.apache.spark.sql.Row
 import scala.collection.mutable.ArrayBuffer
 
 import gnomadutils.FilterByInterval.{getVariantsInGene}
@@ -26,7 +27,10 @@ class GnomadDatabase(vds: VariantDataset) {
         contig = v.contig,
         start = v.start,
         ref = v.ref,
-        allele_count = vas.query("info", "AC")(va).asInstanceOf[ArrayBuffer[Int]].toList
+        altAlleles = v.altAlleles,
+        allele_count = vas.query("info", "AC")(va).asInstanceOf[ArrayBuffer[Int]].toList,
+        allele_frequency = vas.query("info", "AF")(va).asInstanceOf[ArrayBuffer[Double]].toList,
+        allele_number = vas.query("info", "AN")(va).asInstanceOf[Int]
       )
     }
     val collected = results.collect().toList

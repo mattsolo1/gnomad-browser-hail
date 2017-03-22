@@ -1,10 +1,15 @@
 package gnomadsangria
 
+import is.hail.variant.{Variant, AltAllele}
+
 case class GnomadVariant(
   contig: String,
   start: Long,
   ref: String,
-  allele_count: List[Int]
+  altAlleles: Seq[AltAllele],
+  allele_count: List[Int],
+  allele_frequency: List[Double],
+  allele_number: Int
 )
 
 case class GnomadGene(
