@@ -3,7 +3,8 @@ package gnomadsangria
 case class GnomadVariant(
   contig: String,
   start: Long,
-  ref: String
+  ref: String,
+  allele_count: List[Int]
 )
 
 case class GnomadGene(

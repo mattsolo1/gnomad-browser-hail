@@ -69,7 +69,8 @@ object Server extends App {
   }
   val hc = HailContext()
   // val vdsPath = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
-  val vdsPath = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.autosomes.vds"
+  val vdsPath = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.Y.vds"
+
   val vds = hc.read(vdsPath)
   println("Starting server")
   run(hc, vds, "0.0.0.0", 8004)

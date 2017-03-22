@@ -26,7 +26,13 @@ object SchemaDefinition {
         StringType,
         Some("Reference allele"),
         resolve = _.value.ref
-      )
+      ),
+      Field(
+        "allele_count",
+        ListType(IntType),
+        Some("Allele count"),
+        resolve = _.value.allele_count
+        )
     )
   )
 
