@@ -1,75 +1,16 @@
 package gnomadsangria
 
+import is.hail.expr.{Type}
+
 import sangria.schema._
 
 import gnomadutils.{GnomadVariant, GnomadGene}
 
-object SchemaDefinition {
-  val VariantType = ObjectType(
+class SchemaDefinition(vaSignature: Type) {
 
-    "Variant", fields[Unit, GnomadVariant](
-      Field(
-        "contig",
-        StringType,
-        Some("Chromosome"),
-        resolve = _.value.contig
-      ),
-      Field(
-        "start",
-        LongType,
-        Some("Start position"),
-        resolve = _.value.start
-      ),
-      Field(
-        "ref",
-        StringType,
-        Some("Reference allele"),
-        resolve = _.value.ref
-      ),
-      Field(
-        "alt",
-        ListType(StringType),
-        Some("Alternate allele"),
-        resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList
-      ),
-      Field(
-        "allele_count",
-        ListType(IntType),
-        Some("Allele count"),
-        resolve = _.value.allele_count
-      ),
-      Field(
-        "allele_frequency",
-        ListType(FloatType),
-        Some("Allele frequency"),
-        resolve = _.value.allele_frequency
-      ),
-      Field(
-        "allele_number",
-        IntType,
-        Some("Allele number"),
-        resolve = _.value.allele_number
-      ),
-      Field(
-        "vqslod",
-        FloatType,
-        Some("VQSLOD"),
-        resolve = _.value.vqslod
-      ),
-      Field(
-        "gq_hist_alt",
-        ListType(StringType),
-        Some("GQ histogram for alt allele"),
-        resolve = _.value.gq_hist_alt
-      ),
-      Field(
-        "as_filter_status",
-        ListType(ListType(StringType)),
-        Some("AS filter status"),
-        resolve = _.value.as_filter_status
-      )
-    )
-  )
+  val variantFields = GnomadVariant.makeGraphQLVariantSchema(vaSignature)
+
+  val VariantType = ObjectType("Variant", variantFields)
 
   val GeneType = ObjectType(
 

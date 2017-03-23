@@ -16,14 +16,11 @@ import spray.json._
 import scala.util.{Failure, Success}
 
 import is.hail.HailContext
-import is.hail.variant.{VariantDataset}
+import is.hail.variant.VariantDataset
 
 object Server extends App {
 
   def run(hc: HailContext, vds: VariantDataset, address: String, port: Int) = {
-
-    // val data: List[(Variant, (Annotation, Iterable[Genotype]))] = vds.rdd.collect().toList
-
     implicit val system = ActorSystem("sangria-server")
     implicit val materializer = ActorMaterializer()
     import system.dispatcher
@@ -47,7 +44,8 @@ object Server extends App {
 
             // query parsed successfully, time to execute it!
             case Success(queryAst) ⇒
-              complete(Executor.execute(SchemaDefinition.GnomadSchema, queryAst, new GnomadDatabase(vds),
+              val schemaDef = new SchemaDefinition(vds.vaSignature)
+              complete(Executor.execute(schemaDef.GnomadSchema, queryAst, new GnomadDatabase(vds),
                 variables = vars,
                 operationName = operation)
                 // deferredResolver = DeferredResolver.fetchers(SchemaDefinition.characters))
