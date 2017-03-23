@@ -1,16 +1,9 @@
 import org.scalatest._
 import is.hail.HailContext
 import is.hail.expr.{EvalContext, Parser, TArray, TCall, TChar, TDict, TDouble, TGenotype, TInt, TSet, TString, TStruct, TVariant, Type}
-
 import scala.collection.mutable.ArrayBuffer
-//import hail.variant.Variant
 
-case class GnomadVariant(
-  contig: String,
-  start: Long,
-  ref: String,
-  allele_count: Any
-)
+import gnomadutils.GnomadVariant.{toGnomadVariants}
 
 class ConvertHailToGQL extends FlatSpec with Matchers {
 
@@ -20,21 +13,10 @@ class ConvertHailToGQL extends FlatSpec with Matchers {
 
   "Get variant data" should "package into new class" in {
 
-    val vas = vds.vaSignature
-    // val acField = vds.vaSignature.fieldOption(List("info", "AC"))
+    val gnomadVariants = toGnomadVariants(vds)
 
-    val results = vds.rdd.map { case (v, (va, gs)) =>
-      GnomadVariant(
-        contig = v.contig,
-        start = v.start,
-        ref = v.ref,
-        allele_count = vas.query("info", "AC")(va).asInstanceOf[ArrayBuffer[Int]].toList
-      )
-    }
-
-    val collected = results.collect()
-    val first = collected.take(1)
-   collected.foreach(println)
+    val first = gnomadVariants.take(3)
+    first.foreach(println)
 
   }
 }

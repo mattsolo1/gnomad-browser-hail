@@ -1,9 +1,8 @@
 package gnomadsangria
 
-import sangria.execution.deferred.{Fetcher, HasId}
 import sangria.schema._
 
-import scala.concurrent.Future
+import gnomadutils.{GnomadVariant, GnomadGene}
 
 object SchemaDefinition {
   val VariantType = ObjectType(

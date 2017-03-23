@@ -1,14 +1,12 @@
-package gnomadsangria
+package gnomadutils
 
 import scalaj.http.{HttpResponse, Http}
 
-import org.json4s.jackson.JsonMethods
 import org.json4s.{JObject, JArray, JInt, JString, JDecimal}
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
 
 object FetchData {
-
   implicit val formats = DefaultFormats
 
   val gnomadApiUrl = "http://gnomad-api.broadinstitute.org"
