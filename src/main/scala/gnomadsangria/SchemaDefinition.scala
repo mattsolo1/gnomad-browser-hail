@@ -49,6 +49,24 @@ object SchemaDefinition {
         IntType,
         Some("Allele number"),
         resolve = _.value.allele_number
+      ),
+      Field(
+        "vqslod",
+        FloatType,
+        Some("VQSLOD"),
+        resolve = _.value.vqslod
+      ),
+      Field(
+        "gq_hist_alt",
+        ListType(StringType),
+        Some("GQ histogram for alt allele"),
+        resolve = _.value.gq_hist_alt
+      ),
+      Field(
+        "as_filter_status",
+        ListType(ListType(StringType)),
+        Some("AS filter status"),
+        resolve = _.value.as_filter_status
       )
     )
   )

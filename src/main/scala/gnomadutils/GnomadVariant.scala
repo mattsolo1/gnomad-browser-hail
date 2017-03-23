@@ -13,7 +13,9 @@ case class GnomadVariant(
   allele_count: List[Int],
   allele_frequency: List[Double],
   allele_number: Int,
-  vqslod: Double
+  vqslod: Double,
+  gq_hist_alt: List[String],
+  as_filter_status: List[List[String]]
 )
 
 object GnomadVariant {
@@ -30,7 +32,9 @@ object GnomadVariant {
         allele_count = vas.query("info", "AC")(va).asInstanceOf[ArrayBuffer[Int]].toList,
         allele_frequency = vas.query("info", "AF")(va).asInstanceOf[ArrayBuffer[Double]].toList,
         allele_number = vas.query("info", "AN")(va).asInstanceOf[Int],
-        vqslod = vas.query("info", "VQSLOD")(va).asInstanceOf[Double]
+        vqslod = vas.query("info", "VQSLOD")(va).asInstanceOf[Double],
+        gq_hist_alt = vas.query("info", "GQ_HIST_ALT")(va).asInstanceOf[ArrayBuffer[String]].toList,
+        as_filter_status = vas.query("info", "AS_FilterStatus")(va).asInstanceOf[ArrayBuffer[Set[String]]].toList.map(_.toList)
       )
     }
 
