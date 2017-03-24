@@ -7,13 +7,36 @@ import sangria.schema._
 import gnomadutils.{GnomadVariant, GnomadGene}
 
 class SchemaDefinition(vaSignature: Type) {
-
   val variantFields = GnomadVariant.makeGraphQLVariantSchema(vaSignature)
-
   val VariantType = ObjectType("Variant", variantFields)
 
-  val GeneType = ObjectType(
+//  val TestType = ObjectType(
+//    "Test", fields[Unit, Unit](
+//      Field(
+//        "test1",
+//        StringType,
+//        Some("hellooo"),
+//        resolve = (ctx) => "hello"
+//      ),
+//      Field(
+//        "test1",
+//        ObjectType(
+//          "yeaah", fields[Unit, Unit](
+//            Field(
+//              "hahaha",
+//              IntType,
+//              Some("sexytimem"),
+//              resolve = (ctx) => 9
+//            )
+//          )
+//        ),
+//        Some("hellooo"),
+//        resolve = () => _
+//      )
+//    )
+//  )
 
+  val GeneType = ObjectType(
     "Gene", fields[GnomadDatabase, GnomadGene](
       Field(
         "gene_name",
