@@ -46,6 +46,6 @@ class ConvertHailToGQL extends FlatSpec with Matchers {
       json
     }.collect()
 
-   annotationJSON.take(2).map(json => (json \\ "AN").extract[Int]).foreach(println)
+   annotationJSON.take(2).map(json => (json \\ "AC").extract[List[Int]]).foreach(println)
   }
 }

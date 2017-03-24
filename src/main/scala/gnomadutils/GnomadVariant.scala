@@ -100,7 +100,7 @@ object GnomadVariant {
           if (result == null) 0 else result
         }
       )
-      case TFloat => Field(
+      case TDouble => Field(
         name,
         FloatType,
         Some("test"),
@@ -109,6 +109,33 @@ object GnomadVariant {
           if (result == null) 0.0 else result
         }
       )
+      case TArray(elementType) => {
+        println(elementType)
+        elementType match {
+          case TInt =>
+            Field(
+              name,
+              ListType(IntType),
+              Some("test"),
+              resolve = ctx => (ctx.value.annotations \\ name).extract[ArrayBuffer[Int]]
+            )
+          case TDouble =>
+            Field(
+              name,
+              ListType(FloatType),
+              Some("test"),
+              resolve = ctx => (ctx.value.annotations \\ name).extract[ArrayBuffer[Double]]
+            )
+          case TString =>
+            Field(
+              name,
+              ListType(StringType),
+              Some("test"),
+              resolve = ctx => (ctx.value.annotations \\ name).extract[ArrayBuffer[String]]
+            )
+          case _ => Field(name, StringType , Some("test"), resolve = (ctx) => "nothing to see here")
+        }
+      }
       case TStruct(hailFields) => {
         Field(name, ObjectType(name, hailFields.map(f => toGraphQLField(f)).toList), Some("test"), resolve = (ctx) => ctx.value)
       }
