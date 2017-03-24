@@ -15,17 +15,7 @@ case class GnomadVariant(
   contig: String,
   start: Long,
   ref: String,
-//  pass: Boolean,
- altAlleles: Seq[AltAllele],
-//  allele_count: List[Int],
-//  allele_frequency: List[Double],
-//  allele_number: Int,
-//  vqslod: Double,
-//  gq_hist_alt: List[String],
-//  as_filter_status: List[List[String]],
-//  neg_train: Boolean,
-//  pos_train:  Boolean,
-//  values: Map[String, Any],
+  altAlleles: Seq[AltAllele],
   annotations: JValue
 ) {
 }
@@ -39,25 +29,13 @@ object GnomadVariant {
         contig = v.contig,
         start = v.start,
         ref = v.ref,
-//        pass = vas.query("pass")(va).asInstanceOf[Boolean],
-       altAlleles = v.altAlleles,
-//        allele_count = vas.query("info", "AC")(va).asInstanceOf[ArrayBuffer[Int]].toList,
-//        allele_frequency = vas.query("info", "AF")(va).asInstanceOf[ArrayBuffer[Double]].toList,
-//        allele_number = vas.query("info", "AN")(va).asInstanceOf[Int],
-//        vqslod = vas.query("info", "VQSLOD")(va).asInstanceOf[Double],
-//        gq_hist_alt = vas.query("info", "GQ_HIST_ALT")(va).asInstanceOf[ArrayBuffer[String]].toList,
-//        as_filter_status = vas.query("info", "AS_FilterStatus")(va).asInstanceOf[ArrayBuffer[Set[String]]].toList.map(_.toList),
-//        neg_train = vas.query("info", "VQSR_NEGATIVE_TRAIN_SITE")(va).asInstanceOf[Boolean],
-//        pos_train = vas.query("info", "VQSR_POSITIVE_TRAIN_SITE")(va).asInstanceOf[Boolean],
-//        values = Map(),
+        altAlleles = v.altAlleles,
         annotations = JSONAnnotationImpex.exportAnnotation(va, vas)
       )
     }
-
     val collected = results.collect().toList
     collected
   }
-
 
   def getAnnotationValues(name: String, va: Annotation, hailType: HailType): Tuple2[String, Any] = {
     hailType match {
@@ -70,13 +48,13 @@ object GnomadVariant {
   }
 
   def toGraphQLField(hailField: HailField): Field[GnomadDatabase, GnomadVariant] = {
-    implicit val formats = DefaultFormats // Brings in default date formats etc.
+    implicit val formats = DefaultFormats
     val HailField(name, typ, index, attrs) = hailField
     val gqlfield: Field[GnomadDatabase, GnomadVariant] = typ match {
       case TBoolean => Field(
         name,
         BooleanType,
-        Some("test"),
+        toGraphQLDescription(attrs),
        resolve = ctx => {
          val result = (ctx.value.annotations \\ name).extract[Boolean]
          if (result == null) false else result
@@ -85,7 +63,7 @@ object GnomadVariant {
       case TString => Field(
         name,
         StringType,
-        Some("test"),
+        toGraphQLDescription(attrs),
         resolve = ctx => {
           val result = (ctx.value.annotations \\ name).extract[String]
           if (result == null) "Nothing to see" else result
@@ -94,7 +72,7 @@ object GnomadVariant {
       case TInt => Field(
         name,
         IntType,
-        Some("test"),
+        toGraphQLDescription(attrs),
         resolve = ctx => {
           val result = (ctx.value.annotations \\ name).extract[Int]
           if (result == null) 0 else result
@@ -103,7 +81,7 @@ object GnomadVariant {
       case TDouble => Field(
         name,
         FloatType,
-        Some("test"),
+        toGraphQLDescription(attrs),
         resolve = ctx => {
           val result = (ctx.value.annotations \\ name).extract[Double]
           if (result == null) 0.0 else result
@@ -116,37 +94,35 @@ object GnomadVariant {
             Field(
               name,
               ListType(IntType),
-              Some("test"),
+              toGraphQLDescription(attrs),
               resolve = ctx => (ctx.value.annotations \\ name).extract[ArrayBuffer[Int]]
             )
           case TDouble =>
             Field(
               name,
               ListType(FloatType),
-              Some("test"),
+              toGraphQLDescription(attrs),
               resolve = ctx => (ctx.value.annotations \\ name).extract[ArrayBuffer[Double]]
             )
           case TString =>
             Field(
               name,
               ListType(StringType),
-              Some("test"),
+              toGraphQLDescription(attrs),
               resolve = ctx => (ctx.value.annotations \\ name).extract[ArrayBuffer[String]]
             )
-          case _ => Field(name, StringType , Some("test"), resolve = (ctx) => "nothing to see here")
+          case _ => Field(name, StringType , toGraphQLDescription(attrs), resolve = (ctx) => "nothing to see here")
         }
       }
       case TStruct(hailFields) => {
-        Field(name, ObjectType(name, hailFields.map(f => toGraphQLField(f)).toList), Some("test"), resolve = (ctx) => ctx.value)
+        Field(name, ObjectType(name, hailFields.map(f => toGraphQLField(f)).toList), toGraphQLDescription(attrs), resolve = (ctx) => ctx.value)
       }
-      case _ => Field(name, StringType , Some("test"), resolve = (ctx) => "nothing to see here")
+      case _ => Field(name, StringType , toGraphQLDescription(attrs), resolve = (ctx) => "nothing to see here")
     }
     gqlfield
   }
 
-//  def toGraphQLDescription(attrs: Map[String, Any]) =
-
-  def toGraphQLDescription(attrs: String) = attrs
+  def toGraphQLDescription(attrs: Map[String, String]): Option[String] = attrs.get("Description")
 
   def makeGraphQLVariantSchema(vaSignature: HailType): List[Field[GnomadDatabase, GnomadVariant]]  = {
     val Some(field) = vaSignature.fieldOption(List("info"))
