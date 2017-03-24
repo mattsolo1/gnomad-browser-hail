@@ -124,8 +124,8 @@ object GnomadVariant {
 
   def toGraphQLDescription(attrs: Map[String, String]): Option[String] = attrs.get("Description")
 
-  def makeGraphQLVariantSchema(vaSignature: HailType): List[Field[GnomadDatabase, GnomadVariant]]  = {
-    val Some(field) = vaSignature.fieldOption(List("info"))
+  def makeGraphQLVariantSchema(vaSignature: HailType, a: String): List[Field[GnomadDatabase, GnomadVariant]]  = {
+    val Some(field) = vaSignature.fieldOption(List(a))
     val fields = toGraphQLField(field)
     List(fields)
   }

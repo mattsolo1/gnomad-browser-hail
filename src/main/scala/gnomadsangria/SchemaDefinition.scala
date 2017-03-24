@@ -33,8 +33,9 @@ class SchemaDefinition(vaSignature: Type) {
       resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList
     )
   )
-  val variantAnnotationFields = GnomadVariant.makeGraphQLVariantSchema(vaSignature)
-  val VariantType = ObjectType("Variant", variantFields ++ variantAnnotationFields)
+  val topLevelFields = List("pass", "rsid", "qual", "info", "vep")
+  val annotationFields = topLevelFields.flatMap(field => GnomadVariant.makeGraphQLVariantSchema(vaSignature, field))
+  val VariantType = ObjectType("Variant", variantFields ++ annotationFields)
 
   val GeneType = ObjectType(
     "Gene", fields[GnomadDatabase, GnomadGene](
