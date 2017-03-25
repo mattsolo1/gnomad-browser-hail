@@ -5,7 +5,8 @@ import is.hail.expr.{EvalContext, Parser, TArray, TCall, TChar, TDict, TDouble, 
 import scala.collection.mutable.ArrayBuffer
 import org.json4s.{DefaultFormats, JValue}
 import is.hail.expr.JSONAnnotationImpex
-import gnomadutils.GnomadVariant.{getAnnotationValues, toGnomadVariants, toGraphQLField}
+import gnomadutils.GnomadVariant.{toGnomadVariants}
+import gnomadsangria.ToGraphQL.{getAnnotationValues, hailToGraphQLField}
 import org.apache.spark.sql.catalyst.expressions.GenericRow
 
 
@@ -26,7 +27,7 @@ class ConvertHailToGQL extends FlatSpec with Matchers {
   "toGraphQLField" should "take variant of annotation signature, convert to gql types" in {
     val vas = vds.vaSignature
     val Some(field) = vas.fieldOption(List("info"))
-    val graphSchema = toGraphQLField(field)
+    val graphSchema = hailToGraphQLField(field)
     val last = true
 //    println(graphSchema)
   }

@@ -32,27 +32,9 @@ class SchemaDefinition(vaSignature: Type) {
       Some("Alternate allele"),
       resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList
     )
-//    Field(
-//      "Testy",
-//      ListType(
-//        ObjectType(
-//          "Bewbs",
-//          hailFields.map(f => {
-//            Field(
-//              f.name,
-//              StringType,
-//              toGraphQLDescription(f.attrs),
-//              resolve = ctx[Unit, JObject] => Seq(ctx.extract)
-//            )
-//          }).toList
-//        )
-//      ),
-//      Some("Nothing"),
-//      resolve = ctx => Seq(ctx.value)
-//    )
   )
   val topLevelFields = List("pass", "rsid", "qual", "info", "vep")
-  val annotationFields = topLevelFields.flatMap(field => GnomadVariant.makeGraphQLVariantSchema(vaSignature, field))
+  val annotationFields = topLevelFields.flatMap(field => ToGraphQL.makeGraphQLVariantSchema(vaSignature, field))
   val VariantType = ObjectType("Variant", variantFields ++ annotationFields)
 
   val GeneType = ObjectType(
