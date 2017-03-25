@@ -35,4 +35,8 @@ class Json4sExtractValuesTest extends FlatSpec with Matchers {
      joe.isInstanceOf[Person] should be (true)
      joe.address.street should be ("Bulevard")
   }
+
+  "LOL" should "lalala" in {
+    println(JObject(List(("allele_num",JInt(1)), ("allele_num",JInt(1)), ("allele_num",JInt(1)), ("allele_num",JInt(1)), ("allele_num",JInt(1)))).obj)
+  }
 }

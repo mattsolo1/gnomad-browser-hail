@@ -6,6 +6,7 @@ import scala.collection.mutable.ArrayBuffer
 import org.json4s.{DefaultFormats, JValue}
 import is.hail.expr.JSONAnnotationImpex
 import gnomadutils.GnomadVariant.{getAnnotationValues, toGnomadVariants, toGraphQLField}
+import org.apache.spark.sql.catalyst.expressions.GenericRow
 
 
 class ConvertHailToGQL extends FlatSpec with Matchers {
@@ -48,4 +49,34 @@ class ConvertHailToGQL extends FlatSpec with Matchers {
 
    annotationJSON.take(2).map(json => (json \\ "AC").extract[List[Int]]).foreach(println)
   }
+
+  "vaSig" should "access array of structs" in {
+    val vas = vds.vaSignature
+    val Some(field) = vds.vaSignature.fieldOption(List("vep", "transcript_consequences"))
+    val transcriptConsequences = field.typ match {
+      case TArray(elementType: TStruct) =>
+        elementType.fields.map(f => {
+          (f.name, f.typ)
+        })
+    }
+    val results = vds.variantsAndAnnotations.collect().foreach { case (v, va) =>
+      val transcriptAnnotations = vas.query("vep", "transcript_consequences")(va)
+
+      println(field.typ.query("allele_num")(transcriptAnnotations))
+    }
+
+  }
+
+//  "parse in scope" should "do something specific" in {
+//    val vas = vds.vaSignature
+//    val Some(field) = vds.vaSignature.fieldOption(List("vep", "transcript_consequences"))
+//    val transcriptConsequences = field.typ match {
+//      case TArray(elementType: TStruct) =>
+//        val stuff = elementType.fields.map(f => {
+//          (f.name, f.typ)
+//        }): _*
+//        val ec = EvalContext(stuff)
+//    }
+//  }
+
 }

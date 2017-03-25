@@ -9,14 +9,20 @@ import sangria.schema._
 
 import scala.collection.mutable.ArrayBuffer
 import gnomadsangria.GnomadDatabase
-import org.json4s.{DefaultFormats, JValue}
+import org.json4s.JsonAST.{JInt, JObject}
+import org.json4s._
+
+import scala.collection.generic.SeqFactory
 
 case class GnomadVariant(
   contig: String,
   start: Long,
   ref: String,
   altAlleles: Seq[AltAllele],
-  annotations: JValue
+  rawAnnotations: Annotation,
+  annotations: JValue,
+//  allele_num:
+  integer: Int
 ) {
 }
 
@@ -30,7 +36,9 @@ object GnomadVariant {
         start = v.start,
         ref = v.ref,
         altAlleles = v.altAlleles,
-        annotations = JSONAnnotationImpex.exportAnnotation(va, vas)
+        rawAnnotations = va,
+        annotations = JSONAnnotationImpex.exportAnnotation(va, vas),
+        integer = 5
       )
     }
     val collected = results.collect().toList
@@ -55,8 +63,8 @@ object GnomadVariant {
         name,
         BooleanType,
         toGraphQLDescription(attrs),
-       resolve = ctx => {
-         val result = (ctx.value.annotations \\ name).extract[Boolean]
+       resolve = c => {
+         val result = (c.value.annotations \\ name).extract[Boolean]
          if (result == null) false else result
        }
       )
@@ -64,8 +72,8 @@ object GnomadVariant {
         name,
         StringType,
         toGraphQLDescription(attrs),
-        resolve = ctx => {
-          val result = (ctx.value.annotations \\ name).extract[String]
+        resolve = c => {
+          val result = (c.value.annotations \\ name).extract[String]
           if (result == null) "Nothing to see" else result
         }
       )
@@ -73,44 +81,84 @@ object GnomadVariant {
         name,
         IntType,
         toGraphQLDescription(attrs),
-        resolve = ctx => {
-          val result = (ctx.value.annotations \\ name).extract[Int]
-          if (result == null) 0 else result
+        resolve = c => {
+//          println(name, typ)
+          val result = (c.value.annotations \\ name)
+          result match {
+//            case JObject(List(("allele_num",JInt(_)), ("allele_num",JInt(_)), ("allele_num",JInt(_)), ("allele_num",JInt(_)), ("allele_num",JInt(d)))) => 5
+            case _ => (c.value.annotations \\ name).extract[Int]
+//            case _ => 5
+          }
         }
       )
       case TDouble => Field(
         name,
         FloatType,
         toGraphQLDescription(attrs),
-        resolve = ctx => {
-          val result = (ctx.value.annotations \\ name).extract[Double]
+        resolve = c => {
+          val result = (c.value.annotations \\ name).extract[Double]
           if (result == null) 0.0 else result
         }
       )
       case TArray(elementType) => {
-        println(elementType)
         elementType match {
           case TInt =>
             Field(
               name,
               ListType(IntType),
               toGraphQLDescription(attrs),
-              resolve = ctx => (ctx.value.annotations \\ name).extract[ArrayBuffer[Int]]
+              resolve = c => (c.value.annotations \\ name).extract[ArrayBuffer[Int]]
             )
           case TDouble =>
             Field(
               name,
               ListType(FloatType),
               toGraphQLDescription(attrs),
-              resolve = ctx => (ctx.value.annotations \\ name).extract[ArrayBuffer[Double]]
+              resolve = c => (c.value.annotations \\ name).extract[ArrayBuffer[Double]]
             )
           case TString =>
             Field(
               name,
               ListType(StringType),
               toGraphQLDescription(attrs),
-              resolve = ctx => (ctx.value.annotations \\ name).extract[ArrayBuffer[String]]
+              resolve = c => {
+                // println(c)
+                (c.value.annotations \\ name).extract[ArrayBuffer[String]]
+              }
             )
+//         case TStruct(hailFields) =>
+//           Field(
+//             name,
+//             ListType(
+//               ObjectType(
+//                 name,
+//                 hailFields.map(f => {
+//                   Field(
+//                     f.name,
+//                     StringType,
+//                     toGraphQLDescription(f.attrs),
+//                     resolve = ctx[Unit, JObject] => Seq(ctx.extract)
+//                   )
+//                 }).toList
+//               )
+//             ),
+//             toGraphQLDescription(attrs),
+//             resolve = ctx => Seq(ctx.value)
+//           )
+//           case TStruct(hailFields) => {
+////             hailFields.foreach(println)
+//             val fields = hailFields.map(f => toGraphQLField(f)).toList
+////             println(fields)
+//             Field(
+//               name,
+//               ListType(ObjectType(name, fields)),
+//               toGraphQLDescription(attrs),
+//               resolve = (c) => {
+// //                println(c)
+//                 Seq(c.value)
+//               }
+//             )
+//           }
           case _ => Field(name, StringType , toGraphQLDescription(attrs), resolve = (ctx) => "nothing to see here")
         }
       }
