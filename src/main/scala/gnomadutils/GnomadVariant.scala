@@ -32,9 +32,15 @@ object GnomadVariant {
         rawAnnotations = va,
         annotations = JSONAnnotationImpex.exportAnnotation(va, vas),
         integer = 5
+//        population = getPopulationStats(vas, va)
+
       )
     }
     val collected = results.collect().toList
     collected
   }
+
+//  getPopulationStats(vas: TStruct, va: Annotation) = {
+//
+//  }
 }

@@ -63,7 +63,7 @@ class ConvertHailToGQL extends FlatSpec with Matchers {
     val results = vds.variantsAndAnnotations.collect().foreach { case (v, va) =>
       val transcriptAnnotations = vas.query("vep", "transcript_consequences")(va)
 
-      println(field.typ.query("allele_num")(transcriptAnnotations))
+//      println(field.typ.query("allele_num")(transcriptAnnotations))
     }
 
   }

@@ -17,12 +17,17 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % "10.0.1",
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.1",
 
-  // requests
   "org.scalaj" %% "scalaj-http" % "2.3.0",
+  // "org.json4s" %% "json4s-jackson" % "3.3.0",
 
-  "org.json4s" %% "json4s-jackson" % "3.3.0"
+  "org.apache.spark" %% "spark-core" % "2.0.2" % "provided",
+  "org.apache.spark" %% "spark-sql" % "2.0.2" % "provided",
+  "org.apache.spark" %% "spark-mllib" % "2.0.2" % "provided"
 )
 
-unmanagedBase := file("/Users/msolomon/src/spark-2.0.2-bin-hadoop2.7/jars")
+test in assembly := {}
+
+// unmanagedBase := file("/Users/msolomon/src/spark-2.0.2-bin-hadoop2.7/jars")
+unmanagedBase := file("/Users/msolomon/Projects/scala-stuff/hail-tests/lib")
 
 resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"

@@ -18,7 +18,7 @@ import scala.util.{Failure, Success}
 import is.hail.HailContext
 import is.hail.variant.VariantDataset
 
-object Server extends App {
+object Server{
 
   def run(hc: HailContext, vds: VariantDataset, address: String, port: Int) = {
     implicit val system = ActorSystem("sangria-server")
@@ -65,11 +65,14 @@ object Server extends App {
 
     Http().bindAndHandle(route, address, sys.props.get("http.port").fold(port)(_.toInt))
   }
-  val hc = HailContext()
-  // val vdsPath = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
-  val vdsPath = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.Y.vds"
 
-  val vds = hc.read(vdsPath)
-  println("Starting server")
-  run(hc, vds, "0.0.0.0", 8004)
+  def main(args: Array[String]) {
+    val hc = HailContext()
+    // val vdsPath = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
+    val vdsPath = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.Y.vds"
+
+    val vds = hc.read(vdsPath)
+    println("Starting server")
+    run(hc, vds, "0.0.0.0", 8004)
+  }
 }
