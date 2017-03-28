@@ -27,7 +27,7 @@ libraryDependencies ++= Seq(
 
 test in assembly := {}
 
-// unmanagedBase := file("/Users/msolomon/src/spark-2.0.2-bin-hadoop2.7/jars")
-unmanagedBase := file("/Users/msolomon/Projects/scala-stuff/hail-tests/lib")
+unmanagedBase := file("/Users/msolomon/src/spark-2.0.2-bin-hadoop2.7/jars")
+// unmanagedBase := file("/Users/msolomon/Projects/scala-stuff/hail-tests/lib")
 
 resolvers += "Artima Maven Repository" at "http://repo.artima.com/releases"

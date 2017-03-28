@@ -1,20 +1,13 @@
-import org.scalatest._
-import is.hail.HailContext
-import is.hail.expr.TSet
+package gnomadutils
 
-class QueryVariantSpec extends FlatSpec with Matchers {
+import org.scalatest._
+
+import is.hail.HailContext
+
+class ProcessSpec extends FlatSpec with Matchers {
   val hc = HailContext()
   val vdsPath = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
   val vds = hc.read(vdsPath)
-
-  "vds.queryVariants" should "take an array of expressions, return results" in {
-    val expressions = Array(
-	     "variants.map(v => v.ref).collect().toSet()"
-    )
-    val results = vds.queryVariants(expressions)
-    results(0)._1.asInstanceOf[Set[String]].size should be (41)
-    results(0)._2.isInstanceOf[TSet] should be (true)
-  }
 
   "vds.queryVA" should "do something specific" in {
     val (_, countQuery) = vds.queryVA("va.info.AC")
@@ -30,9 +23,20 @@ class QueryVariantSpec extends FlatSpec with Matchers {
           "consequences" -> consequenceQuery(va)
         )
       }
+    results.size should be (3)
+//    results.foreach(println)
+  }
 
-      results.size should be (3)
+  "test" should "print identity" in {
+    Process.test("Hello there") should be ("Hello there")
+  }
 
-    results.foreach(println)
+  "getMostSevereConsequence" should "get severe consequences" in {
+    val results = vds.variantsAndAnnotations
+      .collect()
+      .take(3)
+      .map {  case (v, va) =>
+        println(Process.getMostSevereConsequence(vds, va))
+      }
   }
 }
