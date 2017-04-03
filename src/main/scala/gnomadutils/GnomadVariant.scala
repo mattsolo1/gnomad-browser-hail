@@ -16,8 +16,7 @@ case class GnomadVariant(
   rawAnnotations: Annotation,
   annotations: JValue,
   integer: Int
-) {
-}
+) 
 
 object GnomadVariant {
   def toGnomadVariants(vds: VariantDataset) = {
@@ -33,7 +32,6 @@ object GnomadVariant {
         annotations = JSONAnnotationImpex.exportAnnotation(va, vas),
         integer = 5
 //        population = getPopulationStats(vas, va)
-
       )
     }
     val collected = results.collect().toList
