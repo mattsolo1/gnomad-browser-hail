@@ -1,12 +1,13 @@
 package gnomadsangria
 
-import is.hail.expr.{Type}
+import is.hail.variant.VariantDataset
+import is.hail.expr.Type
 
 import sangria.schema._
+import gnomadutils.{GnomadGene, GnomadVariant}
 
-import gnomadutils.{GnomadVariant, GnomadGene}
 
-class SchemaDefinition(vaSignature: Type) {
+class SchemaDefinition(datasets: List[VariantDataset]) {
   val variantFields = fields[GnomadDatabase, GnomadVariant](
     Field(
       "contig",
@@ -28,11 +29,12 @@ class SchemaDefinition(vaSignature: Type) {
     ),
     Field(
       "alt",
-      ListType(StringType),
+      StringType,
       Some("Alternate allele"),
-      resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList
+      resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList(0)
     )
   )
+  val vaSignature: Type = datasets(0).vaSignature
   val topLevelFields = List("pass", "rsid", "qual", "info", "vep")
   val annotationFields = topLevelFields.flatMap(field => ToGraphQL.makeGraphQLVariantSchema(vaSignature, field))
   val VariantType = ObjectType("Variant", variantFields ++ annotationFields)

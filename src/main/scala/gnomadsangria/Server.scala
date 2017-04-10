@@ -4,9 +4,12 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes._
+import akka.http.scaladsl.model.headers.{HttpOrigin, HttpOriginRange}
 import akka.http.scaladsl.server._
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
+import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+import ch.megard.akka.http.cors.scaladsl.settings.CorsSettings
 import sangria.execution.deferred.DeferredResolver
 import sangria.parser.QueryParser
 import sangria.execution.{ErrorWithResolver, Executor, QueryAnalysisError}
@@ -20,13 +23,15 @@ import is.hail.variant.VariantDataset
 
 object Server{
 
-  def run(hc: HailContext, vds: VariantDataset, address: String, port: Int) = {
+  def run(hc: HailContext, datasets: List[VariantDataset], address: String, port: Int) = {
     implicit val system = ActorSystem("sangria-server")
     implicit val materializer = ActorMaterializer()
     import system.dispatcher
 
+    val corsSettings = CorsSettings.defaultSettings
+
     val route: Route =
-      (post & path("graphql")) {
+      (cors(corsSettings) & post & path("graphql")) {
         entity(as[JsValue]) { requestJson ⇒
           val JsObject(fields) = requestJson
           val JsString(query) = fields("query")
@@ -44,8 +49,8 @@ object Server{
 
             // query parsed successfully, time to execute it!
             case Success(queryAst) ⇒
-              val schemaDef = new SchemaDefinition(vds.vaSignature)
-              complete(Executor.execute(schemaDef.GnomadSchema, queryAst, new GnomadDatabase(vds),
+              val schemaDef = new SchemaDefinition(datasets)
+              complete(Executor.execute(schemaDef.GnomadSchema, queryAst, new GnomadDatabase(datasets),
                 variables = vars,
                 operationName = operation)
                 // deferredResolver = DeferredResolver.fetchers(SchemaDefinition.characters))
@@ -69,10 +74,19 @@ object Server{
   def main(args: Array[String]) {
     val hc = HailContext()
     // val vdsPath = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
-    val vdsPath = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.Y.vds"
+    // val vdsPath = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.Y.vds"
 
-    val vds = hc.read(vdsPath)
+    val vdsPath1 = args(0)
+    val vdsPath2 = args(1)
+
+    val vds1 = hc.read(vdsPath1)
+    val vds2 = hc.read(vdsPath2)
+
+    val datasets = List(vds1, vds2)
+
+    datasets.foreach(println)
+
     println("Starting server")
-    run(hc, vds, "0.0.0.0", 8004)
+    run(hc, datasets, "0.0.0.0", 8004)
   }
 }

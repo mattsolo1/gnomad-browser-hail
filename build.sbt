@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
   "org.sangria-graphql" %% "sangria-spray-json" % "1.0.0",
   "com.typesafe.akka" %% "akka-http" % "10.0.1",
   "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.1",
+  "ch.megard" %% "akka-http-cors" % "0.2.1",
 
   "org.scalaj" %% "scalaj-http" % "2.3.0",
   // "org.json4s" %% "json4s-jackson" % "3.3.0",

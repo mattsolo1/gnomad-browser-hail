@@ -14,14 +14,12 @@ case class GnomadVariant(
   ref: String,
   altAlleles: Seq[AltAllele],
   rawAnnotations: Annotation,
-  annotations: JValue,
-  integer: Int
-) 
+  annotations: JValue
+)
 
 object GnomadVariant {
   def toGnomadVariants(vds: VariantDataset) = {
     val vas = vds.vaSignature
-
     val results = vds.rdd.map { case (v, (va, gs)) =>
       GnomadVariant(
         contig = v.contig,
@@ -29,16 +27,10 @@ object GnomadVariant {
         ref = v.ref,
         altAlleles = v.altAlleles,
         rawAnnotations = va,
-        annotations = JSONAnnotationImpex.exportAnnotation(va, vas),
-        integer = 5
-//        population = getPopulationStats(vas, va)
+        annotations = JSONAnnotationImpex.exportAnnotation(va, vas)
       )
     }
     val collected = results.collect().toList
     collected
   }
-
-//  getPopulationStats(vas: TStruct, va: Annotation) = {
-//
-//  }
 }
