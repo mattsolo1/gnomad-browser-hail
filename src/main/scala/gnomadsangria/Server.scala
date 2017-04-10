@@ -81,7 +81,6 @@ object Server{
 
     val vds1 = hc.read(vdsPath1)
     val vds2 = hc.read(vdsPath2)
-
     val datasets = List(vds1, vds2)
 
     datasets.foreach(println)

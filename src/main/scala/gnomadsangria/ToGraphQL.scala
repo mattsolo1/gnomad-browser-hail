@@ -10,7 +10,7 @@ import sangria.schema._
 import scala.collection.mutable.ArrayBuffer
 import org.json4s._
 
-import gnomadutils.GnomadVariant
+import gnomadutils.VdsVariant
 
 object ToGraphQL {
   def toGraphQLDescription(attrs: Map[String, String]): Option[String] = attrs.get("Description")
@@ -25,10 +25,10 @@ object ToGraphQL {
     }
   }
 
-  def hailToGraphQLField(hailField: HailField): Field[GnomadDatabase, GnomadVariant] = {
+  def hailToGraphQLField(hailField: HailField): Field[GnomadDatabase, VdsVariant] = {
     implicit val formats = DefaultFormats
     val HailField(name, typ, index, attrs) = hailField
-    val gqlfield: Field[GnomadDatabase, GnomadVariant] = typ match {
+    val gqlfield: Field[GnomadDatabase, VdsVariant] = typ match {
       case TBoolean => Field(
         name,
         BooleanType,
@@ -103,7 +103,7 @@ object ToGraphQL {
     gqlfield
   }
 
-  def makeGraphQLVariantSchema(vaSignature: HailType, a: String): List[Field[GnomadDatabase, GnomadVariant]]  = {
+  def makeGraphQLVariantSchema(vaSignature: HailType, a: String): List[Field[GnomadDatabase, VdsVariant]]  = {
     val Some(field) = vaSignature.fieldOption(List(a))
     val fields = hailToGraphQLField(field)
     List(fields)

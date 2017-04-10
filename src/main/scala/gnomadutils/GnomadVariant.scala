@@ -8,25 +8,23 @@ import is.hail.expr.JSONAnnotationImpex
 import scala.collection.mutable.ArrayBuffer
 import org.json4s._
 
-case class GnomadVariant(
+case class VdsVariant(
   contig: String,
   start: Long,
   ref: String,
   altAlleles: Seq[AltAllele],
-  rawAnnotations: Annotation,
   annotations: JValue
 )
 
-object GnomadVariant {
-  def toGnomadVariants(vds: VariantDataset) = {
+object VdsVariant {
+  def toVdsSchemaVariants(vds: VariantDataset) = {
     val vas = vds.vaSignature
     val results = vds.rdd.map { case (v, (va, gs)) =>
-      GnomadVariant(
+      VdsVariant(
         contig = v.contig,
         start = v.start,
         ref = v.ref,
         altAlleles = v.altAlleles,
-        rawAnnotations = va,
         annotations = JSONAnnotationImpex.exportAnnotation(va, vas)
       )
     }

@@ -4,10 +4,10 @@ import is.hail.variant.VariantDataset
 import is.hail.expr.Type
 
 import sangria.schema._
-import gnomadutils.{GnomadGene, GnomadVariant}
+import gnomadutils.{GnomadGene, VdsVariant}
 
-class VariantDefinition(vds: VariantDataset) {
-  val variantFields = fields[GnomadDatabase, GnomadVariant](
+object VariantTopLevelDefinition {
+  val variantFields = fields[GnomadDatabase, VdsVariant](
     Field(
       "contig",
       StringType,
@@ -33,6 +33,10 @@ class VariantDefinition(vds: VariantDataset) {
       resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList(0)
     )
   )
+}
+
+class VdsVariantDefinition(vds: VariantDataset) {
+  val variantFields = VariantTopLevelDefinition.variantFields
   val vaSignature: Type = vds.vaSignature
   val topLevelFields = List("pass", "rsid", "qual", "info", "vep")
   val annotationFields = topLevelFields.flatMap(field => ToGraphQL.makeGraphQLVariantSchema(vaSignature, field))
@@ -40,8 +44,8 @@ class VariantDefinition(vds: VariantDataset) {
 }
 
 class SchemaDefinition(datasets: List[VariantDataset]) {
-  val exomeVariants = new VariantDefinition(datasets(0))
-  val genomeVariants = new VariantDefinition(datasets(1))
+  val exomeVariants = new VdsVariantDefinition(datasets(0))
+  val genomeVariants = new VdsVariantDefinition(datasets(1))
 
   val GeneType = ObjectType(
     "Gene", fields[GnomadDatabase, GnomadGene](
