@@ -2,8 +2,8 @@ package gnomadsangria
 
 import is.hail.variant.VariantDataset
 
-import sangria.schema.{fields, ObjectType, Field,
-StringType, LongType, IntType, ListType, Argument, OptionType, Schema}
+import sangria.schema.{fields, ObjectType, Field, OptionInputType,
+StringType, LongType, IntType, BooleanType, ListType, Argument, OptionType, Schema}
 
 import gnomadutils.{GnomadGene, VdsVariant}
 
@@ -44,6 +44,8 @@ class SchemaDefinition(datasets: Map[String, VariantDataset]) {
   val ExomeVariantType = getVdsVariantDefinition("ExomeVariant", datasets("exome_variants"))
   val GenomeVariantType = getVdsVariantDefinition("GenomeVariant", datasets("genome_variants"))
 
+  val selectPass = Argument("pass", OptionInputType(BooleanType))
+
   val GeneType = ObjectType(
     "Gene", fields[GnomadDatabase, GnomadGene](
       Field(
@@ -80,9 +82,16 @@ class SchemaDefinition(datasets: Map[String, VariantDataset]) {
         "exome_variants",
         ListType(ExomeVariantType),
         Some("Exome variants"),
+        arguments = selectPass :: Nil,
         resolve = (context) => {
           val gene = context.value
-          val variants = context.ctx.getVariants("exome_variants", gene.chrom, gene.start, gene.stop)
+          val variants = context.ctx.getVariants(
+            "exome_variants",
+            context.arg(selectPass),
+            gene.chrom,
+            gene.start,
+            gene.stop
+          )
           variants
         }
       ),
@@ -90,9 +99,16 @@ class SchemaDefinition(datasets: Map[String, VariantDataset]) {
         "genome_variants",
         ListType(GenomeVariantType),
         Some("Genome variants"),
+        arguments = selectPass :: Nil,
         resolve = (context) => {
           val gene = context.value
-          val variants = context.ctx.getVariants("genome_variants", gene.chrom, gene.start, gene.stop)
+          val variants = context.ctx.getVariants(
+            "genome_variants",
+            context.arg(selectPass),
+            gene.chrom,
+            gene.start,
+            gene.stop
+          )
           variants
         }
       )
