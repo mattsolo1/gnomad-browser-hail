@@ -1,51 +1,48 @@
 package gnomadsangria
 
 import is.hail.variant.VariantDataset
-import is.hail.expr.Type
 
-import sangria.schema._
+import sangria.schema.{fields, ObjectType, Field,
+StringType, LongType, IntType, ListType, Argument, OptionType, Schema}
+
 import gnomadutils.{GnomadGene, VdsVariant}
 
-object VariantTopLevelDefinition {
-  val variantFields = fields[GnomadDatabase, VdsVariant](
-    Field(
-      "contig",
-      StringType,
-      Some("Chromosome"),
-      resolve = _.value.contig
-    ),
-    Field(
-      "start",
-      LongType,
-      Some("Start position"),
-      resolve = _.value.start
-    ),
-    Field(
-      "ref",
-      StringType,
-      Some("Reference allele"),
-      resolve = _.value.ref
-    ),
-    Field(
-      "alt",
-      StringType,
-      Some("Alternate allele"),
-      resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList(0)
+class SchemaDefinition(datasets: Map[String, VariantDataset]) {
+  def getVdsVariantDefinition(typeName: String, vds: VariantDataset) = {
+    val variantFields = fields[GnomadDatabase, VdsVariant](
+      Field(
+        "contig",
+        StringType,
+        Some("Chromosome"),
+        resolve = _.value.contig
+      ),
+      Field(
+        "start",
+        LongType,
+        Some("Start position"),
+        resolve = _.value.start
+      ),
+      Field(
+        "ref",
+        StringType,
+        Some("Reference allele"),
+        resolve = _.value.ref
+      ),
+      Field(
+        "alt",
+        StringType,
+        Some("Alternate allele"),
+        resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList(0)
+      )
     )
-  )
-}
+    val topLevelFields = List("pass", "rsid", "qual", "info", "vep")
+    val annotationFields = topLevelFields.flatMap(field => ToGraphQL.makeGraphQLVariantSchema(vds, field))
+    val variantType = ObjectType(typeName, variantFields ++ annotationFields)
+    variantType
+  }
 
-class VdsVariantDefinition(vds: VariantDataset) {
-  val variantFields = VariantTopLevelDefinition.variantFields
-  val vaSignature: Type = vds.vaSignature
-  val topLevelFields = List("pass", "rsid", "qual", "info", "vep")
-  val annotationFields = topLevelFields.flatMap(field => ToGraphQL.makeGraphQLVariantSchema(vaSignature, field))
-  val VariantType = ObjectType("Variant", variantFields ++ annotationFields)
-}
-
-class SchemaDefinition(datasets: List[VariantDataset]) {
-  val exomeVariants = new VdsVariantDefinition(datasets(0))
-  val genomeVariants = new VdsVariantDefinition(datasets(1))
+  val ExomeVariantType = getVdsVariantDefinition("ExomeVariant", datasets("exome_variants"))
+  val GenomeVariantType = getVdsVariantDefinition("GenomeVariant", datasets("genome_variants"))
 
   val GeneType = ObjectType(
     "Gene", fields[GnomadDatabase, GnomadGene](
@@ -81,21 +78,21 @@ class SchemaDefinition(datasets: List[VariantDataset]) {
       ),
       Field(
         "exome_variants",
-        ListType(exomeVariants.VariantType),
+        ListType(ExomeVariantType),
         Some("Exome variants"),
         resolve = (context) => {
           val gene = context.value
-          val variants = context.ctx.getVariants(gene.chrom, gene.start, gene.stop)
+          val variants = context.ctx.getVariants("exome_variants", gene.chrom, gene.start, gene.stop)
           variants
         }
       ),
       Field(
         "genome_variants",
-        ListType(genomeVariants.VariantType),
+        ListType(GenomeVariantType),
         Some("Genome variants"),
         resolve = (context) => {
           val gene = context.value
-          val variants = context.ctx.getVariants(gene.chrom, gene.start, gene.stop)
+          val variants = context.ctx.getVariants("genome_variants", gene.chrom, gene.start, gene.stop)
           variants
         }
       )

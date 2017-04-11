@@ -1,16 +1,14 @@
 package gnomadsangria
 
 import org.apache.spark.sql.Row
-
 import is.hail.expr.{Field => HailField, Type => HailType, _}
 import is.hail.annotations.Annotation
-
 import sangria.schema._
 
 import scala.collection.mutable.ArrayBuffer
 import org.json4s._
-
 import gnomadutils.VdsVariant
+import is.hail.variant.VariantDataset
 
 object ToGraphQL {
   def toGraphQLDescription(attrs: Map[String, String]): Option[String] = attrs.get("Description")
@@ -103,8 +101,8 @@ object ToGraphQL {
     gqlfield
   }
 
-  def makeGraphQLVariantSchema(vaSignature: HailType, a: String): List[Field[GnomadDatabase, VdsVariant]]  = {
-    val Some(field) = vaSignature.fieldOption(List(a))
+  def makeGraphQLVariantSchema(vds: VariantDataset, a: String): List[Field[GnomadDatabase, VdsVariant]]  = {
+    val Some(field) = vds.vaSignature.fieldOption(List(a))
     val fields = hailToGraphQLField(field)
     List(fields)
   }

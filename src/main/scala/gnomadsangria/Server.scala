@@ -23,7 +23,7 @@ import is.hail.variant.VariantDataset
 
 object Server{
 
-  def run(hc: HailContext, datasets: List[VariantDataset], address: String, port: Int) = {
+  def run(hc: HailContext, datasets: Map[String, VariantDataset], address: String, port: Int) = {
     implicit val system = ActorSystem("sangria-server")
     implicit val materializer = ActorMaterializer()
     import system.dispatcher
@@ -81,9 +81,7 @@ object Server{
 
     val vds1 = hc.read(vdsPath1)
     val vds2 = hc.read(vdsPath2)
-    val datasets = List(vds1, vds2)
-
-    datasets.foreach(println)
+    val datasets = Map("exome_variants" -> vds1, "genome_variants" -> vds2)
 
     println("Starting server")
     run(hc, datasets, "0.0.0.0", 8004)
