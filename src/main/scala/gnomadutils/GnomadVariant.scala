@@ -53,6 +53,7 @@ object LossOfFunctionVariant {
   }
 
   def newVariants(vds: VariantDataset) = {
+
     val (emptySchema, deleter) = vds.deleteVA()
     val newVariants = vds.mapAnnotations((v, va, gs) => deleter(va)).copy(vaSignature = emptySchema)
     newVariants
