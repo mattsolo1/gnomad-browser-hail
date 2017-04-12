@@ -5,7 +5,7 @@ import is.hail.expr.{EvalContext, Parser, TArray, TCall, TChar, TDict, TDouble, 
 import scala.collection.mutable.ArrayBuffer
 import org.json4s.{DefaultFormats, JValue}
 import is.hail.expr.JSONAnnotationImpex
-import gnomadutils.GnomadVariant.{toGnomadVariants}
+import gnomadutils.VdsVariant.{toVdsSchemaVariants}
 import gnomadsangria.ToGraphQL.{getAnnotationValues, hailToGraphQLField}
 import org.apache.spark.sql.catalyst.expressions.GenericRow
 
@@ -19,7 +19,7 @@ class ConvertHailToGQL extends FlatSpec with Matchers {
   val vds = hc.read(vdsPath)
 
   "Get variant data" should "package into new class" in {
-    val gnomadVariants = toGnomadVariants(vds)
+    val gnomadVariants = toVdsSchemaVariants(vds)
     val first = gnomadVariants.take(3)
 //    first.foreach(println)
   }

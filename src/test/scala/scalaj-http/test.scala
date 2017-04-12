@@ -76,10 +76,8 @@ class ScalaHttp extends FlatSpec with Matchers {
             feature_type
             strand
             stop
-            xstart
             chrom
             gene_id
-            xstop
           }
         }
       }

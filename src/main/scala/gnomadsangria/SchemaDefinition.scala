@@ -41,8 +41,8 @@ class SchemaDefinition(datasets: Map[String, VariantDataset]) {
     variantType
   }
 
-  val ExomeVariantType = getVdsVariantDefinition("ExomeVariant", datasets("exome_variants"))
-  val GenomeVariantType = getVdsVariantDefinition("GenomeVariant", datasets("genome_variants"))
+  val ExomeVdsVariantType = getVdsVariantDefinition("ExomeVariant", datasets("exome_variants"))
+  val GenomeVdsVariantType = getVdsVariantDefinition("GenomeVariant", datasets("genome_variants"))
 
   val selectPass = Argument("pass", OptionInputType(BooleanType))
 
@@ -80,7 +80,7 @@ class SchemaDefinition(datasets: Map[String, VariantDataset]) {
       ),
       Field(
         "exome_variants",
-        ListType(ExomeVariantType),
+        ListType(ExomeVdsVariantType),
         Some("Exome variants"),
         arguments = selectPass :: Nil,
         resolve = (context) => {
@@ -97,7 +97,7 @@ class SchemaDefinition(datasets: Map[String, VariantDataset]) {
       ),
       Field(
         "genome_variants",
-        ListType(GenomeVariantType),
+        ListType(GenomeVdsVariantType),
         Some("Genome variants"),
         arguments = selectPass :: Nil,
         resolve = (context) => {
