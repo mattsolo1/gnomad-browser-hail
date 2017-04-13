@@ -1,18 +1,38 @@
 package gnomadutils
 
 import is.hail.annotations._
-import is.hail.expr.{Field, TInt}
+import is.hail.expr.{Field, TDouble, TFloat, TInt, Type}
 import is.hail.variant.VariantDataset
 
 import scala.collection.mutable.ArrayBuffer
 
+case class gnomadAnnotation(gKey: String, gTyp: Type, gQuerier: Querier) {
+
+}
+
 object Process {
 
+  val multiAllelicIntegers = Set(
+    "allele_count"
+  )
+
+  val multiAllelicDouble = Set(
+    "allele_frequency"
+  )
+
+  def getGnomadTyp(key: String, typ: Type) = {
+    key match {
+      case (key) if multiAllelicIntegers.contains(key) => TInt
+      case (key) if multiAllelicDouble.contains(key) => TDouble
+      case _  => typ
+    }
+  }
 
   def processAnnotation(annotation: Annotation, querier: Querier, key: String) = {
     val value = querier(annotation)
     key match {
-      case "allele_count" => value.asInstanceOf[ArrayBuffer[Int]](0)
+      case (key) if multiAllelicIntegers.contains(key) => value.asInstanceOf[ArrayBuffer[Int]](0)
+      case (key) if multiAllelicDouble.contains(key) => value.asInstanceOf[ArrayBuffer[Double]](0)
       case _ => value
     }
   }
@@ -25,12 +45,9 @@ object Process {
           val query = vdsAcc.vaSignature.query(path)
           val Some(Field(_, typ, _, _)) = vdsAcc.vaSignature.fieldOption(path)
 
-          val multiAllelicTyp = key match {
-            case "allele_count" => TInt
-            case _  => typ
-          }
+          val gnomadTyp = getGnomadTyp(key, typ)
 
-          val (signature, inserter) = vdsAcc.vaSignature.insert(multiAllelicTyp, key)
+          val (signature, inserter) = vdsAcc.vaSignature.insert(gnomadTyp, key)
           (vdsAcc.copy(vaSignature = signature), queryAcc :+ query, inserterAcc :+ inserter)
         }
   }
@@ -39,20 +56,6 @@ object Process {
     val vdsWithAddedAnnotations = vdsWithSchema.mapAnnotations((v, va, gs) =>
       fs.foldLeft(va){ case (acc, (querier, inserter, key)) => inserter(acc, processAnnotation(va, querier, key))})
     vdsWithAddedAnnotations
-  }
-
-  def getMostSevereConsequence(vds: VariantDataset, va: Annotation) = {
-    val (transcriptConsequenceSchema, transcriptConsequencesQuery) = vds.queryVA("va.vep.transcript_consequences")
-    println(transcriptConsequenceSchema.schema)
-    val alleles = transcriptConsequencesQuery(va).asInstanceOf[ArrayBuffer[AnyVal]]
-    println(alleles)
-    val consequencesByTranscript = alleles.map(va => {
-      println(va.getClass)
-//      val allele = transcriptConsequenceSchema.query("variant_allele")(va)
-//      val impact = transcriptConsequenceSchema.query("impact")(va)
-//      (allele, impact)
-    })
-    consequencesByTranscript
   }
 
   def filterByExpression(selectPass: Option[Boolean], vds: VariantDataset) = selectPass match {
