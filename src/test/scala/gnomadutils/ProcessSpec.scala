@@ -73,7 +73,7 @@ class ProcessSpec extends FlatSpec with Matchers {
       "allele_frequency" -> List("info", "AF")
     )
 
-    val processed = Process.processForBrowser(newSchemaMap, vds)
+    val processed = Process.addAnnotations(newSchemaMap, vds)
     println(processed.vaSignature.toPrettyString())
     processed.rdd.collect().take(3).toList.foreach(println)
   }

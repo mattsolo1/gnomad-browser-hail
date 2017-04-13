@@ -21,7 +21,7 @@ import scala.util.{Failure, Success}
 import is.hail.HailContext
 import is.hail.variant.VariantDataset
 
-import gnomadutils.Process.processForBrowser
+import gnomadutils.Process.addAnnotations
 
 object Server{
 
@@ -89,9 +89,10 @@ object Server{
 
     val vds1 = hc.read(vdsPath1)
     val vds2 = hc.read(vdsPath2)
+
     val datasets = Map(
-      "exome_variants" -> processForBrowser(newSchemaMap, vds1),
-      "genome_variants" -> processForBrowser(newSchemaMap, vds2)
+      "exome_variants" -> addAnnotations(newSchemaMap, vds1),
+      "genome_variants" -> addAnnotations(newSchemaMap, vds2)
     )
 
     println("Starting server")
