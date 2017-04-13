@@ -21,6 +21,8 @@ import scala.util.{Failure, Success}
 import is.hail.HailContext
 import is.hail.variant.VariantDataset
 
+import gnomadutils.Process.processForBrowser
+
 object Server{
 
   def run(hc: HailContext, datasets: Map[String, VariantDataset], address: String, port: Int) = {
@@ -76,12 +78,21 @@ object Server{
     // val vdsPath = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
     // val vdsPath = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.Y.vds"
 
+    val newSchemaMap = Map(
+      "allele_count" -> List("info", "AC"),
+      "allele_number" -> List("info", "AN"),
+      "allele_frequency" -> List("info", "AF")
+    )
+
     val vdsPath1 = args(0)
     val vdsPath2 = args(1)
 
     val vds1 = hc.read(vdsPath1)
     val vds2 = hc.read(vdsPath2)
-    val datasets = Map("exome_variants" -> vds1, "genome_variants" -> vds2)
+    val datasets = Map(
+      "exome_variants" -> processForBrowser(newSchemaMap, vds1),
+      "genome_variants" -> processForBrowser(newSchemaMap, vds2)
+    )
 
     println("Starting server")
     run(hc, datasets, "0.0.0.0", 8004)

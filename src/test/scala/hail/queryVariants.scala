@@ -18,16 +18,15 @@ class QueryVariantSpec extends FlatSpec with Matchers {
 
   "vds.queryVA" should "do something specific" in {
     val (_, countQuery) = vds.queryVA("va.info.AC")
-    val (_, assemblyQuery) = vds.queryVA("va.vep.assembly_name")
-    val (_, consequenceQuery) = vds.queryVA("va.vep.transcript_consequences")
+//    val (_, assemblyQuery) = vds.queryVA("va.vep.assembly_name")
+//    val (_, consequenceQuery) = vds.queryVA("va.vep.transcript_consequences")
     val results = vds.variantsAndAnnotations
       .collect()
-      .take(3)
       .map { case (v, va) =>
         Map(
-          "counts" -> countQuery(va),
-          "assemblies" -> assemblyQuery(va),
-          "consequences" -> consequenceQuery(va)
+          "counts" -> countQuery(va)
+//          "assemblies" -> assemblyQuery(va),
+//          "consequences" -> consequenceQuery(va)
         )
       }
 

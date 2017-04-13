@@ -1,11 +1,10 @@
 package gnomadsangria
 
-import gnomadutils.{VdsVariant, GnomadGene, FetchData}
-
 import is.hail.variant.{VariantDataset}
 
-import gnomadutils.FilterByInterval.{getVariantsInGene}
-import gnomadutils.VdsVariant.{toVdsSchemaVariants}
+import gnomadutils.{FetchData, GnomadGene, Process, VdsVariant}
+import gnomadutils.FilterByInterval.getVariantsInGene
+import gnomadutils.VdsVariant.toVdsSchemaVariants
 
 class GnomadDatabase(datasets: Map[String, VariantDataset]) {
 
@@ -19,17 +18,13 @@ class GnomadDatabase(datasets: Map[String, VariantDataset]) {
     start: Int, stop:
     String
    ): List[VdsVariant] = {
+
+
     val intervalString = s"${contig}:${start}-${stop}"
     val filteredByGene = getVariantsInGene(datasets(dataSource), intervalString)
-    val filteredByExpression = selectPass match {
-      case Some(pass: Boolean) => {
-        val results = filteredByGene.filterVariants { case (v, va, gs ) =>
-            v.ref == "G"
-        }
-        results
-      }
-      case None => filteredByGene
-    }
+//    val addedFields = Process.processForBrowser(newSchemaMap, filteredByGene)
+
+    val filteredByExpression = Process.filterByExpression(selectPass, filteredByGene)
     val gnomadVariants = toVdsSchemaVariants(filteredByExpression)
 
     gnomadVariants.take(10)
