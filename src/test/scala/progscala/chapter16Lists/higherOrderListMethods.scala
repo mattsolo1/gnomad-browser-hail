@@ -93,3 +93,36 @@ class HigherOrderListMethodsSpec extends FlatSpec with Matchers {
     words.map(_.toUpperCase).head should be ("THE")
   }
 }
+
+class FoldSpec extends FlatSpec with Matchers {
+  "fold" should "sum numbers and a list" in {
+    def sum(numbers: List[Int]): Int = numbers.foldLeft(0)(_ + _)
+    val numbers = (1 to 10).toList
+    sum(numbers) should be (55)
+  }
+
+  "fold" should "should count items in a list" in {
+    def count(items: List[Any]): Int = items.foldLeft(0)((z, _) => z + 1)
+    val numbers = (1 to 10).toList
+    count(numbers) should be (10)
+  }
+
+  "fold" should "should average a list of doubles" in {
+    def average(numbers: List[Double]): Double =
+      numbers.foldLeft(0.0)(_ + _) / numbers.foldLeft(0.0)((z, _) => z + 1)
+    val numbers = List(0.5, 1.0, 1.5)
+    average(numbers) should be (1.0)
+  }
+
+  "fold" should "should average list of doubles in 1 fold" in {
+    def average(numbers: List[Double]): Double = numbers match {
+      case head :: tail => tail.foldLeft((head, 1.0))((z, i) =>
+        ((z._1 + (i/z._2)) * z._2 / (z._2 + 1), z._2 + 1))._1
+      case Nil => Double.NaN
+    }
+    val numbers = List(0.5, 1.0, 1.5)
+    average(numbers) should be (1.0)
+
+  }
+
+}
