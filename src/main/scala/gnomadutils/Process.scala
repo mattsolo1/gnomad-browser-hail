@@ -1,12 +1,21 @@
 package gnomadutils
 
 import is.hail.annotations._
-import is.hail.expr.Field
+import is.hail.expr.{Field, TInt}
 import is.hail.variant.VariantDataset
 
 import scala.collection.mutable.ArrayBuffer
 
 object Process {
+
+
+  def processAnnotation(annotation: Annotation, querier: Querier, key: String) = {
+    val value = querier(annotation)
+    key match {
+      case "allele_count" => value.asInstanceOf[ArrayBuffer[Int]](0)
+      case _ => value
+    }
+  }
 
   def addAnnotations(schemaMap: Map[String, List[String]], vds: VariantDataset): VariantDataset = {
     val (vdsWithSchema, queriers, inserters) =
@@ -14,17 +23,21 @@ object Process {
         case ((vdsAcc, queryAcc, inserterAcc), schema) => {
           val (key, path) = schema
           val query = vdsAcc.vaSignature.query(path)
-          val typ = vdsAcc.vaSignature.fieldOption(path) match {
-            case Some(Field(name, typ, index, attrs)) => typ
+          val Some(Field(_, typ, _, _)) = vdsAcc.vaSignature.fieldOption(path)
+
+          val multiAllelicTyp = key match {
+            case "allele_count" => TInt
+            case _  => typ
           }
-          val (signature, inserter) = vdsAcc.vaSignature.insert(typ, key)
+
+          val (signature, inserter) = vdsAcc.vaSignature.insert(multiAllelicTyp, key)
           (vdsAcc.copy(vaSignature = signature), queryAcc :+ query, inserterAcc :+ inserter)
         }
-      }
+  }
 
-    val fs = queriers.zip(inserters)
+    val fs = (queriers, inserters, schemaMap.keys).zipped
     val vdsWithAddedAnnotations = vdsWithSchema.mapAnnotations((v, va, gs) =>
-      fs.foldLeft(va){ case (acc, (querier, inserter)) => inserter(acc, querier(acc))})
+      fs.foldLeft(va){ case (acc, (querier, inserter, key)) => inserter(acc, processAnnotation(va, querier, key))})
     vdsWithAddedAnnotations
   }
 
