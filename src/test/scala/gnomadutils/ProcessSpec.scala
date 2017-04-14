@@ -67,14 +67,16 @@ class ProcessSpec extends FlatSpec with Matchers {
   }
 
   "insert/delete" should "should construct a new schema from multiple queries" in {
-    val newSchemaMap = Map(
-      "allele_count" -> List("info", "AC"),
-      "allele_number" -> List("info", "AN"),
-      "allele_frequency" -> List("info", "AF")
+    val newSchemaMap = List(
+      ("allele_count", List("info", "AC")),
+      ("allele_number", List("info", "AN")),
+      ("allele_frequency", List("info", "AF"))
     )
 
-    val processed = Process.addAnnotations(newSchemaMap, vds)
+    val processed = Process.addAnnotations(vds, newSchemaMap)
     println(processed.vaSignature.toPrettyString())
     processed.rdd.collect().take(3).toList.foreach(println)
   }
+
+
 }

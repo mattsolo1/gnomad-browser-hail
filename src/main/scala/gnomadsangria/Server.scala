@@ -78,12 +78,6 @@ object Server{
     // val vdsPath = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
     // val vdsPath = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.Y.vds"
 
-    val newSchemaMap = Map(
-      "allele_count" -> List("info", "AC"),
-      "allele_number" -> List("info", "AN"),
-      "allele_frequency" -> List("info", "AF")
-    )
-
     val vdsPath1 = args(0)
     val vdsPath2 = args(1)
 
@@ -91,8 +85,8 @@ object Server{
     val vds2 = hc.read(vdsPath2)
 
     val datasets = Map(
-      "exome_variants" -> addAnnotations(newSchemaMap, vds1),
-      "genome_variants" -> addAnnotations(newSchemaMap, vds2)
+      "exome_variants" -> addAnnotations(vds1),
+      "genome_variants" -> addAnnotations(vds2)
     )
 
     println("Starting server")
