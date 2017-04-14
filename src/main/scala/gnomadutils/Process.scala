@@ -1,7 +1,7 @@
 package gnomadutils
 
 import is.hail.annotations._
-import is.hail.expr.{Field, TDouble, TFloat, TInt, TStruct, Type}
+import is.hail.expr.{Field, TDouble, TFloat, TInt, TString, TStruct, Type}
 import is.hail.variant.VariantDataset
 
 import scala.collection.mutable.ArrayBuffer
@@ -10,7 +10,8 @@ object Process {
   val countsMap = List(
     ("allele_count", List("info", "AC")),
     ("allele_number", List("info", "AN")),
-    ("allele_frequency", List("info", "AF"))
+    ("allele_frequency", List("info", "AF")),
+    ("consequence", List("info", "CSQ"))
   )
 
   val qualityControlMetrics = Set(
@@ -70,8 +71,13 @@ object Process {
     key match {
       case (key) if multiAllelicIntegers.contains(key) => TInt
       case (key) if multiAllelicDouble.contains(key) => TDouble
+      case "consequence" => TString
       case _  => typ
     }
+  }
+
+  def getConsequences(csq: ArrayBuffer[String]) = {
+    csq(0).split("\\|")(1)
   }
 
   def processAnnotation(annotation: Annotation, querier: Querier, key: String) = {
@@ -79,6 +85,7 @@ object Process {
     key match {
       case (key) if multiAllelicIntegers.contains(key) => value.asInstanceOf[ArrayBuffer[Int]](0)
       case (key) if multiAllelicDouble.contains(key) => value.asInstanceOf[ArrayBuffer[Double]](0)
+      case "consequence" => getConsequences(value.asInstanceOf[ArrayBuffer[String]])
       case _ => value
     }
   }

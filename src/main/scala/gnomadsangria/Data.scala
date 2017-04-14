@@ -27,6 +27,6 @@ class GnomadDatabase(datasets: Map[String, VariantDataset]) {
     val filteredByExpression = Process.filterByExpression(selectPass, filteredByGene)
     val gnomadVariants = toVdsSchemaVariants(filteredByExpression)
 
-    gnomadVariants.take(10)
+    gnomadVariants
   }
 }

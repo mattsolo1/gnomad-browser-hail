@@ -75,8 +75,17 @@ class ProcessSpec extends FlatSpec with Matchers {
 
     val processed = Process.addAnnotations(vds, newSchemaMap)
     println(processed.vaSignature.toPrettyString())
-    processed.rdd.collect().take(3).toList.foreach(println)
+    // processed.rdd.collect().take(3).toList.foreach(println)
   }
 
-
+  "split" should "consequences into smaller bits" in {
+    val test = List(
+      "T|5_prime_UTR_variant|MODIFIER|PCSK9|ENSG00000169174|Transcript|ENST00000302118|protein_coding|1/12||ENST00000302118.5:c.-48C>T||243||||||1||1||SNV|1|HGNC|20001|YES|||CCDS603.1|ENSP00000303208|Q8NBP7||UPI00001615E1|1|||||||||||||||||||||||||||||||||",
+      "T|5_prime_UTR_variant|MODIFIER|PCSK9|ENSG00000169174|Transcript|ENST00000452118|protein_coding|1/6||ENST00000452118.2:c.-48C>T||33||||||1||1||SNV|1|HGNC|20001|||||ENSP00000401598||B4DEZ9|UPI00017A6F55|1|||||||||||||||||||||||||||||||||",
+      "T|upstream_gene_variant|MODIFIER|PCSK9|ENSG00000169174|Transcript|ENST00000543384|protein_coding|||||||||||1|432|1||SNV|1|HGNC|20001|||||ENSP00000441859||F5GWF0|UPI000206501F|1|||||||||||||||||||||||||||||||||",
+      "T|regulatory_region_variant|MODIFIER|||RegulatoryFeature|ENSR00001037993|promoter|||||||||||1||||SNV|1||||||||||||||||||||||||||||||||||||||||||||"
+    )
+    println(test(0))
+    test(0).split("\\|").foreach(println)
+  }
 }

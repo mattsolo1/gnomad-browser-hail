@@ -35,7 +35,7 @@ class SchemaDefinition(datasets: Map[String, VariantDataset]) {
         resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList(0)
       )
     )
-    val topLevelFields = List("pass", "rsid", "qual", "info", "vep", "allele_count", "allele_number", "allele_frequency", "ashkenazi_jewish_ac")
+    val topLevelFields = List("pass", "rsid", "qual", "info", "vep", "allele_count", "allele_number", "allele_frequency", "consequence")
     val annotationFields = topLevelFields.flatMap(field => ToGraphQL.makeGraphQLVariantSchema(vds, field))
     val variantType = ObjectType(typeName, variantFields ++ annotationFields)
     variantType
