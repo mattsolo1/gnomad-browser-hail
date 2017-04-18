@@ -78,18 +78,28 @@ object Server{
     // val vdsPath = "src/test/resources/gnomad.exomes.r2.0.1.sites.PCSK9.vds"
     // val vdsPath = "/Users/msolomon/Data/gnomad/release-170228/gnomad.exomes.r2.0.1.sites.Y.vds"
 
-    val vdsPath1 = args(0)
-    val vdsPath2 = args(1)
+    // val vdsPath1 = args(0)
+    // val vdsPath2 = args(1)
+    // val vdsPath3 = args(0)
+    val vdsPath3 = args(0)
 
-    val vds1 = hc.read(vdsPath1)
-    val vds2 = hc.read(vdsPath2)
+    // val vds1 = hc.read(vdsPath1)
+    // val vds2 = hc.read(vdsPath2)
+    val vds3 = hc.importVCF(vdsPath3)
 
     val datasets = Map(
-      "exome_variants" -> addAnnotations(vds1),
-      "genome_variants" -> addAnnotations(vds2)
+      // "exome_variants" -> vds1,
+      // "genome_variants" -> vds2,
+      "clinvar_variants" -> vds3
     )
 
     println("Starting server")
     run(hc, datasets, "0.0.0.0", 8004)
   }
 }
+
+//spark-submit \
+//--executor-memory 2048m \
+//hail-tests-assembly-1.4.jar \
+//gs://gnomad-public/release-170228/gnomad.exomes.r2.0.1.sites.autosomes.vds \
+//gs://gnomad-public/release-170228/gnomad.genomes.r2.0.1.sites.autosomes.vds

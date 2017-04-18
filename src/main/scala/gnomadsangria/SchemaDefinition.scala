@@ -35,14 +35,15 @@ class SchemaDefinition(datasets: Map[String, VariantDataset]) {
         resolve = _.value.altAlleles.map(altAllele => altAllele.toString).toList(0)
       )
     )
-    val topLevelFields = List("pass", "rsid", "qual", "info", "vep", "allele_count", "allele_number", "allele_frequency", "consequence")
+    val topLevelFields = List("info")
     val annotationFields = topLevelFields.flatMap(field => ToGraphQL.makeGraphQLVariantSchema(vds, field))
     val variantType = ObjectType(typeName, variantFields ++ annotationFields)
     variantType
   }
 
-  val ExomeVdsVariantType = getVdsVariantDefinition("ExomeVariant", datasets("exome_variants"))
-  val GenomeVdsVariantType = getVdsVariantDefinition("GenomeVariant", datasets("genome_variants"))
+  // val ExomeVdsVariantType = getVdsVariantDefinition("ExomeVariant", datasets("exome_variants"))
+  // val GenomeVdsVariantType = getVdsVariantDefinition("GenomeVariant", datasets("genome_variants"))
+  val ClinVarVariantType = getVdsVariantDefinition("ClinVarVariant", datasets("clinvar_variants"))
 
   val selectPass = Argument("pass", OptionInputType(BooleanType))
 
@@ -78,32 +79,49 @@ class SchemaDefinition(datasets: Map[String, VariantDataset]) {
         Some("Gene stop position"),
         resolve = _.value.stop
       ),
+      // Field(
+      //   "exome_variants",
+      //   ListType(ExomeVdsVariantType),
+      //   Some("Exome variants"),
+      //   arguments = selectPass :: Nil,
+      //   resolve = (context) => {
+      //     val gene = context.value
+      //     val variants = context.ctx.getVariants(
+      //       "exome_variants",
+      //       context.arg(selectPass),
+      //       gene.chrom,
+      //       gene.start,
+      //       gene.stop
+      //     )
+      //     variants
+      //   }
+      // ),
+      // Field(
+      //   "genome_variants",
+      //   ListType(GenomeVdsVariantType),
+      //   Some("Genome variants"),
+      //   arguments = selectPass :: Nil,
+      //   resolve = (context) => {
+      //     val gene = context.value
+      //     val variants = context.ctx.getVariants(
+      //       "genome_variants",
+      //       context.arg(selectPass),
+      //       gene.chrom,
+      //       gene.start,
+      //       gene.stop
+      //     )
+      //     variants
+      //   }
+      // ),
       Field(
-        "exome_variants",
-        ListType(ExomeVdsVariantType),
-        Some("Exome variants"),
+        "clinvar_variants",
+        ListType(ClinVarVariantType),
+        Some("ClinVar variants"),
         arguments = selectPass :: Nil,
         resolve = (context) => {
           val gene = context.value
           val variants = context.ctx.getVariants(
-            "exome_variants",
-            context.arg(selectPass),
-            gene.chrom,
-            gene.start,
-            gene.stop
-          )
-          variants
-        }
-      ),
-      Field(
-        "genome_variants",
-        ListType(GenomeVdsVariantType),
-        Some("Genome variants"),
-        arguments = selectPass :: Nil,
-        resolve = (context) => {
-          val gene = context.value
-          val variants = context.ctx.getVariants(
-            "genome_variants",
+            "clinvar_variants",
             context.arg(selectPass),
             gene.chrom,
             gene.start,

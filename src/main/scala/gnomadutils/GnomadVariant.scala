@@ -32,30 +32,3 @@ object VdsVariant {
     collected
   }
 }
-
-case class LossOfFunctionVariant (
-  contig: String,
-  start: Long,
-  ref: String,
-  altAlleles: Seq[AltAllele]
-)
-
-object LossOfFunctionVariant {
-  def clearAnnotations(vds: VariantDataset) = {
-    val toDelete = List("info", "vep")
-    vds.deleteVA(toDelete)
-  }
-
-  def filterVariantsLossOfFunction(vds: VariantDataset) = {
-    vds.filterVariants {
-      case (v, va, gs) => v.ref == "G"
-    }
-  }
-
-  def newVariants(vds: VariantDataset) = {
-
-    val (emptySchema, deleter) = vds.deleteVA()
-    val newVariants = vds.mapAnnotations((v, va, gs) => deleter(va)).copy(vaSignature = emptySchema)
-    newVariants
-  }
-}
